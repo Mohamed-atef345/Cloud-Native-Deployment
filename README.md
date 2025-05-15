@@ -1,155 +1,137 @@
-# 🚀 DEPI Internship DevOps Project – QR Code Reader
-> The QR Code Generator is a cloud-native, containerized application designed to generate and manage QR codes with ease. It showcases a real-world DevOps pipeline with infrastructure automation, Kubernetes-based orchestration, and secure secrets handling.
+# Cloud-Native-Deployment
 
-> This repository is perfect for developers and DevOps engineers aiming to gain hands-on experience in deploying scalable applications using modern tools like Docker, Helm, Terraform, and Kubernetes (Kind). It follows industry-standard best practices for CI/CD and infrastructure as code (IaC).
+## 🚀 Features
 
----
-# Architecture
-![Project Architecture](./arch.png)
-## 🌐 Tech Stack
-
-### Application Layer
-
-- **Frontend**: HTML, CSS, JavaScript  
-  A lightweight, responsive interface for users to input data and generate QR codes. Built without heavy frameworks to keep the app simple and portable.
-
-- **Backend**: [Flask / Node.js / other]  
-  A minimal API service responsible for generating QR codes and optionally storing/retrieving data using a Microsoft SQL Server database hosted on AWS RDS.
+- Helm chart for automated Kubernetes deployments
+- Parameterized configurations using `values.yaml`
+- Supports rolling updates and rollback
+- Resource management (limits, probes, autoscaling)
+- Easy integration with CI/CD pipelines
+- Namespace isolation support
+- Environment-based overrides (dev/staging/prod)
 
 ---
 
-### DevOps & Infrastructure
+## 📦 Prerequisites
 
-- **Docker**  
-  Used to containerize both frontend and backend applications, ensuring consistency across development, testing, and production environments.
+Ensure the following tools are installed before using this project:
 
-- **Kubernetes (Kind)**  
-  Kind is used to run a local Kubernetes cluster for testing and validation. This simulates a production-like orchestration environment without relying on cloud infrastructure.
-
-- **Helm**  
-  Kubernetes package manager used to streamline application deployment. Helm charts provide reusable, configurable templates for services and deployments.
-
-- **Terraform**  
-  Infrastructure as Code (IaC) tool used to provision and manage AWS resources — primarily an RDS (MSSQL) instance and supporting infrastructure — in a repeatable, version-controlled manner.
-
-- **Ingress-NGINX**  
-  Acts as the Kubernetes ingress controller to expose services outside the cluster and handle HTTP routing for the application.
-
-- **Secrets Management: `.env` file**  
-  Environment-specific configuration and secrets are managed using a `.env` file. For production environments, this could be extended using AWS Systems Manager (SSM) or Secrets Manager.
-
-- **Version Control: GitHub**  
-  The entire codebase is maintained on GitHub for collaboration, version tracking, and integration with CI/CD workflows if needed.
+- [Docker](https://www.docker.com/)
+- [Kubernetes](https://kubernetes.io/) (v1.20+)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
+- [Helm](https://helm.sh/) (v3+)
+- (Optional) [Minikube](https://minikube.sigs.k8s.io/docs/) for local testing
 
 ---
 
-## 🔐 Secrets Management
+## 🔧 Installation & Usage
 
-- Secrets (like DB credentials) are stored in a `.env` file.
-- During deployment, Helm is used with `--set-string` or templates to inject these values into the Kubernetes cluster.
-- For production-grade deployments, consider replacing `.env` with AWS SSM Parameter Store or AWS Secrets Manager for better security and automation.
-
----
-## 📌 Best Practices Followed
-
-- Infrastructure as Code (IaC) using Terraform for repeatable AWS setup.
-- Kubernetes Helm charts for modular, parameterized deployments.
-- Clean separation of concerns: infrastructure, app, and deployment logic are clearly segmented.
-- Local development mimics cloud production environment as closely as possible.
-- Secure environment variables usage and separation of sensitive data.
----
-## 🚀 Deployment Methods
-
-### 1. Local Deployment using Docker 🐳  
-#### 📥 Step 1: Install Docker
-
-Make sure Docker is installed on your system.
-
-- 🔗 [Install Docker](https://docs.docker.com/get-docker/)
-
----
-
-#### ▶️ Step 2: Run the application
+### 1. Clone the Repository
 
 ```bash
-cd /path/to/docker-compose.yaml  # Navigate to the folder containing the docker-compose.yaml file
-docker-compose up --build
-```
-**This will:**
+git clone https://github.com/your-username/Cloud-Native-Deployment.git
+cd Cloud-Native-Deployment
+````
 
-- Start the SQL Server container (mcr.microsoft.com/azure-sql-edge)
+### 2. Configure the Values
 
-- Build and run the QR Code application
+Edit `helm/values.yaml` to customize the deployment (e.g., image, replica count, environment variables).
 
-- Make the app accessible at: http://localhost:9000
+```yaml
+replicaCount: 2
 
+image:
+  repository: your-dockerhub/image-name
+  tag: latest
+  pullPolicy: IfNotPresent
 
----
-
-### 2. Local Deployment using Kind and Helm ☸️
-
-#### 📥 Step 1: Install the required tools
-To install all tools (Docker, Kind, kubectl, Helm), run:
-``` bash 
-chmod +x kind-helm-setup.sh
-./kind-helm-setup.sh
+service:
+  type: ClusterIP
+  port: 80
 ```
 
-#### ▶️ Step 2: Deploy the application on Kind
+### 3. Deploy Using Helm
 
-``` bash
-sudo -E helm install qrcode ./QRCode_APP_Chart \
-  --set-string Secret.DB_PASSWORD="MY_db_password123" \
-  --set-string Secret.DB_HOST="sql-db" \
-  --set-string Secret.DB_NAME="QRCodeDatabase" \
-  --set-string Secret.DB_USER="sa"
+Ensure you have access to your Kubernetes cluster:
+
+```bash
+kubectl config current-context
 ```
-**Notes:**
 
-- Make sure the QRCode_APP_Chart directory is in the same path you run the command from.
+Then install the chart:
 
-- You can check if everything is working using:
-
-``` bash 
-kubectl get pods
-kubectl get svc
+```bash
+helm install cloud-native-release ./helm
 ```
-####  Step 3: Accessing the App (Kubernetes Deployment)
-``` bash
-# Check if the ingress controller is running
-kubectl get pods -n ingress-nginx  # should show Running status
 
-# List ingress resources to get the host name
-kubectl get ingress  # Look for the HOSTS column (e.g., qrcode.local)
+To upgrade the release after changes:
 
-# Map the ingress domain to localhost (edit /etc/hosts)
-echo "127.0.0.1 qrcode.local" | sudo tee -a /etc/hosts  # map domain to local
+```bash
+helm upgrade cloud-native-release ./helm
+```
 
-# Now open the app in browser at:
-# http://qrcode.local
+### 4. Verify the Deployment
+
+```bash
+kubectl get all
+kubectl describe deployment <deployment-name>
+```
+
+### 5. Uninstall the Release
+
+```bash
+helm uninstall cloud-native-release
 ```
 
 ---
 
-### 3. Deploy to Production Environment (Recommended)
+## 🗂️ Project Structure
 
-This deployment targets AWS infrastructure, using Terraform to provision backend services (e.g., RDS) and Helm to deploy the application into a production-ready K8s cluster.
+```text
+Cloud-Native-Deployment/
+├── helm/
+│   ├── charts/                 # (Optional) Subcharts
+│   ├── templates/              # Helm templates for k8s resources
+│   │   ├── deployment.yaml
+│   │   ├── service.yaml
+│   │   └── _helpers.tpl
+│   ├── values.yaml             # Default values
+│   └── Chart.yaml              # Helm chart metadata
+├── .github/                    # GitHub Actions or workflows (optional)
+├── README.md                   # Project documentation
+└── LICENSE
+```
 
-**Steps**:
-
-```  bash 
-
-
- ```
 ---
-## 🙋 Contributors
 
-- **GitHub**: [Your GitHub Username]
-- **LinkedIn**: [Your LinkedIn URL]
+## 📄 Documentation
+
+* **Helm Docs:** [https://helm.sh/docs/](https://helm.sh/docs/)
+* **Kubernetes Docs:** [https://kubernetes.io/docs/](https://kubernetes.io/docs/)
+* **Best Practices for Helm Charts:** [https://helm.sh/docs/chart\_best\_practices/](https://helm.sh/docs/chart_best_practices/)
 
 ---
 
-## 📄 License
+## 👨‍💻 Contributing
+
+Contributions are welcome! If you find a bug or want to add a feature, please open an issue or submit a pull request.
+
+---
+
+## 📜 License
 
 This project is licensed under the [MIT License](LICENSE).
 
+---
+
+## 📫 Contact
+
+Maintained by **Mohamed Atef**
+For questions or feedback: \[[your-email@example.com](mailto:your-email@example.com)]
+
+```
+
+---
+
+Let me know if you'd like this tailored to a specific use case (e.g., deploying a Node.js app, Flask API, etc.), or if you'd like to include CI/CD integration notes (like GitHub Actions or Jenkins).
+```
