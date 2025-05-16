@@ -20,19 +20,14 @@ resource "null_resource" "setup_environment" {
     type        = "ssh"
     user        = "ubuntu"
     host        = aws_instance.web_server.public_ip
-    private_key = file("~/.ssh/deployer")
+    private_key = file("~/.ssh/ec2-key")
   }
 
   provisioner "file" {
-    source      = "../QRCode_APP_Chart"
+    source      = "../APP_Chart"
     destination = "/home/ubuntu/"
   }
   
-  provisioner "file" {
-    source      = "./scripts/continue_installation.sh" ##
-    destination = "/home/ubuntu/continue_installation.sh"
-  }
-
   provisioner "file" {
     source      = "argocd.yaml"
     destination = "/home/ubuntu/argocd.yaml"
@@ -51,7 +46,7 @@ resource "null_resource" "setup_environment" {
   }
 
   provisioner "remote-exec" {
-    script = "./scripts/installation.sh"##
+    script = "./scripts/installation.sh"
   }
 
 }

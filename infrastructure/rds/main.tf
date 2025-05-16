@@ -1,12 +1,12 @@
 data "aws_ssm_parameter" "db-password" {
-  name = "/qr/dbpass"
+  name = "/Cloud-Deployment//dbpass"
 }
 data "aws_ssm_parameter" "db-username" {
-  name = "/qr/dbuser"
+  name = "/Cloud-Deployment//dbuser"
 }
 
 data "aws_ssm_parameter" "db-name" {
-  name = "/qr/dbname"
+  name = "/Cloud-Deployment//dbname"
 }
 
 
