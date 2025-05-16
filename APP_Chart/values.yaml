@@ -1,11 +1,11 @@
 # =====================================================================
 # Deployment
-DeploymentName: qrcode-app
+DeploymentName: app-deployment
 ReplicaCount: 2
 
 Containers:
-  ContainerName: "qrcode-app"
-  Image: "mohamedcloud/qr_code_app:v3"
+  ContainerName: "app-deployment"
+  Image: "mohamedcloud/app:v1"
   ImagePullPolicy: "IfNotPresent"
 
 DB_ENVIRONMENT_VARIABLES:
@@ -21,13 +21,13 @@ Port:
 # =====================================================================
 # Service
 Service:
-  ServiceName: "qrcode-app-service"
+  ServiceName: "app-service"
   ServicePort: 9001
 
 # =====================================================================
 # ConfigMap
 ConfigMap:
-  ConfigMapName: "qrcode-app-configmap"
+  ConfigMapName: "app-configmap"
   DB_PORT: 1433
   EXTERNAL_DB_PORT: 1433
 
@@ -49,5 +49,5 @@ Secret:
 # =====================================================================
 # Ingress
 Ingress:
-  IngressName: qrcode-app-ingress
+  IngressName: app-ingress
   HostName: 
