@@ -15,7 +15,7 @@ module "network" {
 }
 module "web-app-server" {
   source               = "./modules/web-app-server"
-  ami           = "ami-04b4f1a9cf54c11d0"# Ubuntu 24.04 LTS AMI in us-east-1
+  ami           = "ami-04b4f1a9cf54c11d0"
   instance_type = "t2.medium"
   vpc_cidr             = "10.0.0.0/16"
   vpc_name             = "my-vpc-2"
