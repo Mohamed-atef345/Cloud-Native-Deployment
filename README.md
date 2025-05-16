@@ -1,4 +1,4 @@
-# Cloud Deployment Infrastructure
+# Cloud-Native-Deployment
 
 This repository contains the complete infrastructure setup for deploying a containerized application on AWS using Terraform, Kubernetes (`kubeadm`), Helm, and Argo CD. It follows Infrastructure-as-Code and GitOps best practices to ensure scalable, secure, and automated deployments.
 
