@@ -116,5 +116,3 @@ This creates an Argo CD Application that pulls and deploys the Helm chart from t
 * Argo CD is exposed on **NodePort 30080** and is always available at `https://<public-ip>:30080`.
 * The RDS instance is secured in a private subnet and only accessible by the EC2 instance.
 * Secrets are securely managed via AWS SSM Parameter Store and injected into Kubernetes.
-
----
