@@ -1,34 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: qr-app
+  name: App-argocd
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/shehab-19/Depi_graduation_project.git
+    repoURL: https://github.com/Mohamed-atef345/Cloud-Native-Deployment.git
     targetRevision: HEAD
-    path: QRCode_APP_Chart
+    path: APP_Chart
     helm:
-      parameters:
-        - name: Secret.DB_PASSWORD
-          value: $DB_PASSWORD
-          forceString: true
-        - name: Secret.DB_HOST
-          value: $DB_HOST  
-          forceString: true
-        - name: Secret.DB_NAME
-          value: $DB_NAME
-          forceString: true
-        - name: Secret.DB_USER
-          value: $DB_USER
-          forceString: true
-        - name: Ingress.HostName
-          value: $URL
-          forceString: true
-  destination:
+      valueFiles:
+        - values.yaml
+        - values.auto.yaml
     server: https://kubernetes.default.svc
-    namespace: qr-app
+    namespace: app-namespace
   syncPolicy:
     automated: {}
     syncOptions:
